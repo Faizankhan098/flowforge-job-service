@@ -1,5 +1,7 @@
 package com.flowforge.jobservice.worker;
-
+import java.time.Instant;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import com.flowforge.jobservice.kafka.JobEvent;
 import com.flowforge.jobservice.metrics.JobMetrics;
 import com.flowforge.jobservice.model.Job;
@@ -15,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,9 +53,10 @@ class JobWorkerTest {
                 .thenReturn(Optional.of(job));
 
         when(jobRepository.updateStatusIfCurrentStatus(
-                jobId,
-                JobStatus.PENDING,
-                JobStatus.PROCESSING
+                eq(jobId),
+                eq(JobStatus.PENDING),
+                eq(JobStatus.PROCESSING),
+                any(Instant.class)
         )).thenReturn(1);
 
         jobWorker.processJob(event);
@@ -63,9 +64,10 @@ class JobWorkerTest {
         verify(jobRepository).findById(jobId);
 
         verify(jobRepository).updateStatusIfCurrentStatus(
-                jobId,
-                JobStatus.PENDING,
-                JobStatus.PROCESSING
+                eq(jobId),
+                eq(JobStatus.PENDING),
+                eq(JobStatus.PROCESSING),
+                any(Instant.class)
         );
 
         verify(jobRepository).save(job);
@@ -100,6 +102,7 @@ class JobWorkerTest {
         verify(jobRepository, never()).updateStatusIfCurrentStatus(
                 any(),
                 any(),
+                any(),
                 any()
         );
 
@@ -129,9 +132,10 @@ class JobWorkerTest {
                 .thenReturn(Optional.of(job));
 
         when(jobRepository.updateStatusIfCurrentStatus(
-                jobId,
-                JobStatus.PENDING,
-                JobStatus.PROCESSING
+                eq(jobId),
+                eq(JobStatus.PENDING),
+                eq(JobStatus.PROCESSING),
+                any(Instant.class)
         )).thenReturn(1);
 
         RuntimeException exception = assertThrows(
@@ -174,9 +178,10 @@ class JobWorkerTest {
                 .thenReturn(Optional.of(job));
 
         when(jobRepository.updateStatusIfCurrentStatus(
-                jobId,
-                JobStatus.PENDING,
-                JobStatus.PROCESSING
+                eq(jobId),
+                eq(JobStatus.PENDING),
+                eq(JobStatus.PROCESSING),
+                any(Instant.class)
         )).thenReturn(0);
 
         jobWorker.processJob(event);
@@ -184,9 +189,10 @@ class JobWorkerTest {
         verify(jobRepository).findById(jobId);
 
         verify(jobRepository).updateStatusIfCurrentStatus(
-                jobId,
-                JobStatus.PENDING,
-                JobStatus.PROCESSING
+                eq(jobId),
+                eq(JobStatus.PENDING),
+                eq(JobStatus.PROCESSING),
+                any(Instant.class)
         );
 
         verify(jobRepository, never()).save(any(Job.class));

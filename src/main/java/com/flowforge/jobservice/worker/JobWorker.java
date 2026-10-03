@@ -7,6 +7,7 @@ import com.flowforge.jobservice.repository.JobRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import com.flowforge.jobservice.metrics.JobMetrics;
+import java.time.Instant;
 
 import java.util.UUID;
 
@@ -55,7 +56,8 @@ public class JobWorker {
         int updatedRows = jobRepository.updateStatusIfCurrentStatus(
                 jobId,
                 JobStatus.PENDING,
-                JobStatus.PROCESSING
+                JobStatus.PROCESSING,
+                Instant.now()
         );
 
         if (updatedRows == 0) {
